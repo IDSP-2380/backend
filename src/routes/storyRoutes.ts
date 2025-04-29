@@ -1,19 +1,25 @@
 import { Router, Request, Response } from "express";
-import mongoose from "mongoose"; // using raw mongoose connection
+import { Story, IStory } from "../models/Story";
 
 const router = Router();
 
-// Super simple MongoDB test
 router.get("/test", async (_req: Request, res: Response) => {
   try {
-    const collections = await mongoose.connection
-      .db!.listCollections()
-      .toArray();
-    res.json({ message: "Connected to database 🎉", collections });
-  } catch (error) {
-    console.error("MongoDB query error:", error);
-    res.status(500).json({ error: "Failed to query database" });
+    const dummy: Partial<IStory> = {
+      title: "🚧 Test Story 🚧",
+      isPublic: true,
+      contributors: [],
+      status: "drafting",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      chains: [],
+    };
+
+    const created = await Story.create(dummy);
+    res.status(201).json(created);
+  } catch (err) {
+    console.log(err);
   }
 });
 
-export default router;
+export default router as Router;
