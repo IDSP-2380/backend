@@ -1,15 +1,19 @@
 import { Router, Request, Response } from "express";
 import { Story } from "../models/Story";
-import { NewStoryInput } from "../types/story";
+import { newStorySchema } from "../types/dtos";
 
 const router = Router();
 
-router.get("/test", async (req: Request, res: Response) => {
+router.get("/", async (req: Request, res: Response) => {
+  res.status(201).json("hi");
+});
+
+router.post("/test", async (req: Request, res: Response) => {
   try {
-    const input: NewStoryInput = req.body;
+    const parsed = newStorySchema.parse(req.body);
 
     const created = await Story.create({
-      ...input,
+      ...parsed,
       createdAt: new Date(),
       updatedAt: new Date(),
     });
