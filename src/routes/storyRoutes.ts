@@ -1,21 +1,19 @@
 import { Router, Request, Response } from "express";
-import { Story, IStory } from "../models/Story";
+import { Story } from "../models/Story";
+import { NewStoryInput } from "../types/story";
 
 const router = Router();
 
-router.get("/test", async (_req: Request, res: Response) => {
+router.get("/test", async (req: Request, res: Response) => {
   try {
-    const dummy: Partial<IStory> = {
-      title: "🚧 Test Story 🚧",
-      isPublic: true,
-      contributors: [],
-      status: "drafting",
+    const input: NewStoryInput = req.body;
+
+    const created = await Story.create({
+      ...input,
       createdAt: new Date(),
       updatedAt: new Date(),
-      chains: [],
-    };
+    });
 
-    const created = await Story.create(dummy);
     res.status(201).json(created);
   } catch (err) {
     console.log(err);
