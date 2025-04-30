@@ -31,7 +31,7 @@ router.get("/testUser", async (_req: Request, res: Response) => {
       createdAt: new Date(),
       updatedAt: new Date(),
     };
-
+    
     const createdUser = await User.create(dummyUser);
     res.status(201).json(createdUser);
   } catch (err) {
