@@ -1,6 +1,7 @@
 import { Router, Request, Response } from "express";
 import { Story, IStory } from "../models/Story";
 import { User } from "../models/User";
+import { Link } from "../models/Link";
 
 const router = Router();
 
@@ -34,6 +35,23 @@ router.get("/testUser", async (_req: Request, res: Response) => {
     
     const createdUser = await User.create(dummyUser);
     res.status(201).json(createdUser);
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+router.get("/testLink", async (_req: Request, res: Response) => {
+  try {
+    const dummyLink = {
+      content: "I love being Lead Dev",
+      author: "LeadDevGavin",
+      stage: "introduction",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    
+    const createdLink = await Link.create(dummyLink);
+    res.status(201).json(createdLink);
   } catch (err) {
     console.log(err);
   }
