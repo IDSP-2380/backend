@@ -2,6 +2,7 @@ import { Router, Request, Response } from "express";
 import { Story, IStory } from "../models/Story";
 import { User } from "../models/User";
 import { Link } from "../models/Link";
+import { numberOfLinksIsValid, wordCountLimitIsValid } from "../utils/validateForm";
 
 const router = Router();
 
@@ -54,6 +55,26 @@ router.get("/testLink", async (_req: Request, res: Response) => {
     const createdLink = await Link.create(dummyLink);
     res.status(201).json(createdLink);
   } catch (err) {
+    console.log(err);
+  }
+});
+
+router.get("/create/story/private", async (req: Request, res: Response) => {
+  try {
+    const { maxWordCount, numberOfLinks } = req.body;
+    if(!wordCountLimitIsValid(parseInt(maxWordCount))) throw new Error("Invalid word count limit");
+    if(!numberOfLinksIsValid(parseInt(numberOfLinks))) throw new Error("Invalid number of links");
+  } catch(err) {
+    console.log(err);
+  }
+});
+
+router.post("/create/story/public", async (req: Request, res: Response) => {
+  try {
+    const { maxWordCount, linkContent, numberOfLinks } = req.body;
+    if(!wordCountLimitIsValid(parseInt(maxWordCount), linkContent)) throw new Error("Invalid word count limit");
+    if(!numberOfLinksIsValid(parseInt(numberOfLinks))) throw new Error("Invalid number of links");
+  } catch(err) {
     console.log(err);
   }
 });
