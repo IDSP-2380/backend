@@ -1,5 +1,13 @@
 import mongoose from "mongoose";
 
+export interface ILink extends mongoose.Document {
+  content: string;
+  author: string;
+  stage: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 const LinkSchema = new mongoose.Schema({
     content: { type: String, required: true },
     author: { type: String, required: true },
@@ -8,4 +16,4 @@ const LinkSchema = new mongoose.Schema({
     updatedAt: { type: Date, default: Date.now },
   });
   
-  export const Link = mongoose.model("Link", LinkSchema);
+export const Link = mongoose.model<ILink>("Link", LinkSchema);
