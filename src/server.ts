@@ -12,6 +12,7 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 10000;
 
+
 connectDB()
   .then(() => {
     app.use("/api/stories", storyRoutes);
