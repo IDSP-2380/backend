@@ -12,11 +12,12 @@ router.get("/test", async (_req: Request, res: Response) => {
       isPublic: true,
       contributors: [],
       status: "ongoing",
+      maxWordCount: 250,
+      numberOfLinks: 20,
       createdAt: new Date(),
       updatedAt: new Date(),
       chains: [],
     };
-    console.log(":(")
     const created = await Story.create(dummy);
     res.status(201).json(created);
   } catch (err) {
