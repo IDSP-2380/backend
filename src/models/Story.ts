@@ -8,7 +8,8 @@ export interface IStory extends mongoose.Document {
   createdAt: Date;
   updatedAt: Date;
   chains: any[];
-
+  maxWordCount: number;
+  numberOfLinks: number;
   startDate?: Date;
   endDate?: Date;
   writingOrder?: string[];
@@ -31,7 +32,8 @@ const StorySchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
   chains: { type: Array, default: [] },
-
+  maxWordCount: { type: Number, required: true},
+  numberOfLinks: { type: Number, required: true},
   startDate: { type: Date, required: false },
   endDate: { type: Date, required: false },
   writingOrder: { type: [String], required: false },
