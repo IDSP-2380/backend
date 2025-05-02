@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { ChainSchema, IChain } from "./Chain";
 
 export interface IStory extends mongoose.Document {
   title: string;
@@ -7,7 +8,7 @@ export interface IStory extends mongoose.Document {
   status: "ongoing" | "completed" | "drafting";
   createdAt: Date;
   updatedAt: Date;
-  chains: any[];
+  chains: IChain[];
   maxWordCount: number;
   numberOfLinks: number;
   startDate?: Date;
@@ -22,7 +23,7 @@ const StorySchema = new mongoose.Schema({
   contributors: [
     {
       username: { type: String, required: true },
-    },
+    }
   ],
   status: {
     type: String,
@@ -31,7 +32,7 @@ const StorySchema = new mongoose.Schema({
   },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
-  chains: { type: Array, default: [] },
+  chains: { type: [ChainSchema], default: [] },
   maxWordCount: { type: Number, required: true},
   numberOfLinks: { type: Number, required: true},
   startDate: { type: Date, required: false },
