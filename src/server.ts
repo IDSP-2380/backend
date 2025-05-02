@@ -4,27 +4,27 @@ import cors from "cors";
 import { connectDB } from "./database/database";
 import storyRoutes from "./routes/storyRoutes";
 
-dotenv.config(); 
+dotenv.config();
 
 const app = express();
-app.use(cors({
-  origin: 'http://localhost:5173', 
-  methods: ['GET', 'POST'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
 app.use(express.json());
 
-
 const PORT = process.env.PORT || 10000;
-
 
 connectDB()
   .then(() => {
     app.use("/api/stories", storyRoutes);
 
     app.listen(PORT, () => {
-      console.log(`🚀 Server running on port ${PORT}`);
+      console.log(`Server running on port ${PORT}`);
     });
   })
   .catch((err) => {

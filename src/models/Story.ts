@@ -22,8 +22,9 @@ const StorySchema = new mongoose.Schema({
   isPublic: { type: Boolean, default: true },
   contributors: [
     {
+      userId: { type: Number, required: true },
       username: { type: String, required: true },
-    }
+    },
   ],
   status: {
     type: String,
@@ -33,8 +34,8 @@ const StorySchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
   chains: { type: [ChainSchema], default: [] },
-  maxWordCount: { type: Number, required: true},
-  numberOfLinks: { type: Number, required: true},
+  maxWordCount: { type: Number, required: true },
+  numberOfLinks: { type: Number, required: true },
   startDate: { type: Date, required: false },
   endDate: { type: Date, required: false },
   writingOrder: { type: [String], required: false },
