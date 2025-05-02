@@ -4,11 +4,17 @@ import cors from "cors";
 import { connectDB } from "./database/database";
 import storyRoutes from "./routes/storyRoutes";
 
-dotenv.config(); // Load environment variables
+dotenv.config(); 
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5173', 
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(express.json());
+
 
 const PORT = process.env.PORT || 10000;
 
