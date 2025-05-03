@@ -30,22 +30,6 @@ router.post("/test", async (req: Request, res: Response) => {
   }
 });
 
-router.get("/testUser", async (_req: Request, res: Response) => {
-  try {
-    const dummyUser = {
-      username: "leadDevGavin",
-      password: "ILoveBeingLeadDev123",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-
-    const createdUser = await User.create(dummyUser);
-    res.status(201).json(createdUser);
-  } catch (err) {
-    console.log(err);
-  }
-});
-
 router.get("/testLink", async (_req: Request, res: Response) => {
   try {
     const dummyLink = {

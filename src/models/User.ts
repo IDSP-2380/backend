@@ -1,10 +1,13 @@
 import mongoose from "mongoose";
 
+export interface IUser extends mongoose.Document {
+  clerkId: string;
+  username: string;
+}
+
 const UserSchema = new mongoose.Schema({
-    username: { type: String, required: true },
-    password: { type: String, required: true },
-    createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date, default: Date.now },
-  });
-  
-  export const User = mongoose.model("User", UserSchema);
+  clerkId: { type: String, required: true },
+  username: { type: String, required: true },
+});
+
+export const User = mongoose.model("User", UserSchema);
