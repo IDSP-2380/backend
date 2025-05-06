@@ -62,7 +62,8 @@ router.get("/testLink", async (_req: Request, res: Response) => {
 
 router.post("/create/story/private", async (req: Request, res: Response) => {
   try {
-    const { storyTitle, maxWordCount, numberOfLinks, collaboratorList, startDate, endDate, days, hours, minutes, timePerTurn } = req.body;
+    const { storyTitle, maxWordCount, numberOfLinks, collaboratorList, startDate, endDate, timePerTurn } = req.body;
+
 
     if(!wordCountLimitIsValid(parseInt(maxWordCount))) throw new Error("Invalid word count limit");
     if(!numberOfLinksIsValid(parseInt(numberOfLinks))) throw new Error("Invalid number of links");
@@ -81,9 +82,16 @@ router.post("/create/story/private", async (req: Request, res: Response) => {
     }
 
     await Story.create(story);
-    
+
+    res.status(201).json({ 
+      success: true, 
+      message: "Story created successfully"
+    });  
   } catch(err) {
     console.log(err);
+    res.status(500).json({ 
+      error: "An error occurred while creating the story" 
+    });
   }
 });
 
