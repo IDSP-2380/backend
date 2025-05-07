@@ -20,4 +20,15 @@ router.get("/test", requireAuth(), async (req: Request, res: Response) => {
   });
 });
 
+router.get("/get-all-users", requireAuth(), async (req: Request, res: Response) => {
+  
+  const users = await clerkClient.users.getUserList()
+
+  res.json({
+    message: "You are authenticated!",
+    fakeData: "random data",
+    users: users,
+  });
+});
+
 export default router as Router;

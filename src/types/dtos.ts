@@ -1,21 +1,19 @@
 import { z } from "zod";
 
 export const contributorSchema = z.object({
-  userId: z.number(),
   username: z.string(),
 });
 
 export const newStorySchema = z.object({
-  title: z.string(),
+  storyTitle: z.string(),
   isPublic: z.boolean().default(true),
-  contributors: z.array(contributorSchema),
+  contributors: z.string().array(),
   status: z.enum(["ongoing", "completed"]).default("ongoing"),
-  createdAt: z.date().optional(),
-  updatedAt: z.date().optional(),
   chains: z.array(z.any()).default([]),
-
-  startDate: z.date().optional(),
-  endDate: z.date().optional(),
+  maxWordCount: z.number(),
+  numberOfLinks: z.number(),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
   writingOrder: z.array(z.string()).optional(),
   timePerTurn: z.string().optional(),
 });
