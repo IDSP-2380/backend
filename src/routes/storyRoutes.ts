@@ -4,6 +4,7 @@ import { User } from "../models/User";
 import { Link } from "../models/Link";
 import { Chain } from "../models/Chain";
 import { numberOfLinksIsValid, wordCountLimitIsValid } from "../utils/validateForm";
+import { newStorySchema } from "../types/dtos";
 
 const router = Router();
 
@@ -62,22 +63,25 @@ router.get("/testLink", async (_req: Request, res: Response) => {
 
 router.post("/create/story/private", async (req: Request, res: Response) => {
   try {
-    const { storyTitle, maxWordCount, numberOfLinks, collaboratorList, startDate, endDate, timePerTurn } = req.body;
+   
+    const parsed = newStorySchema.parse(req.body);
 
+    const { storyTitle, maxWordCount, numberOfLinks, contributors, startDate, endDate, timePerTurn } = parsed;
 
-    if(!wordCountLimitIsValid(parseInt(maxWordCount))) throw new Error("Invalid word count limit");
-    if(!numberOfLinksIsValid(parseInt(numberOfLinks))) throw new Error("Invalid number of links");
+    if(!wordCountLimitIsValid(maxWordCount)) throw new Error("Invalid word count limit");
+    if(!numberOfLinksIsValid(numberOfLinks)) throw new Error("Invalid number of links");
 
     const story = {
       title: storyTitle,
       isPublic: false,
-      contributors: collaboratorList,
+      contributors: contributors,
       status: "ongoing",
       maxWordCount: maxWordCount,
+      chains: [],
       numberOfLinks: numberOfLinks,
       startDate: startDate,
       endDate: endDate,
-      writingOrder: collaboratorList,
+      writingOrder: contributors,
       timePerTurn: timePerTurn
     }
 
