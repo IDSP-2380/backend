@@ -145,4 +145,13 @@ router.post("/create/story/public", async (req: Request, res: Response) => {
   }
 });
 
+router.get("/stories-and-drafts", async (_req: Request, res: Response) => {
+  try {
+    const stories = await Story.find();
+    res.status(201).json(stories);
+  } catch (err) {
+    console.log(err);
+  }
+});
+
 export default router as Router;
