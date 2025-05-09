@@ -81,7 +81,7 @@ router.post("/create/story/private", async (req: Request, res: Response) => {
       title: storyTitle,
       isPublic: false,
       contributors: contributors,
-      status: "ongoing",
+      status: "Ongoing",
       maxWordCount: maxWordCount,
       chains: [],
       numberOfLinks: numberOfLinks,
@@ -108,7 +108,10 @@ router.post("/create/story/private", async (req: Request, res: Response) => {
 
 router.post("/create/story/public", async (req: Request, res: Response) => {
   try {
-    const { maxWordCount, linkContent, numberOfLinks, storyTitle } = req.body;
+
+    const parsed = newStorySchema.parse(req.body.data);
+
+    const { maxWordCount, linkContent, numberOfLinks, storyTitle } = parsed;
 
     console.log(req.body);
 
@@ -120,11 +123,15 @@ router.post("/create/story/public", async (req: Request, res: Response) => {
 
     const createdLink = await Link.create(linkStuff);
 
+    console.log("link created")
+
     const chain = {
       links: createdLink,
     };
 
     const createdChain = await Chain.create(chain);
+
+    console.log("chain created")
 
     const story = {
       title: storyTitle,
@@ -136,10 +143,11 @@ router.post("/create/story/public", async (req: Request, res: Response) => {
     };
 
     await Story.create(story);
-    console.log(req.body);
-    if (!wordCountLimitIsValid(parseInt(maxWordCount), linkContent))
+
+    console.log("story created");
+    if (!wordCountLimitIsValid(maxWordCount, linkContent))
       throw new Error("Invalid word count limit");
-    if (!numberOfLinksIsValid(parseInt(numberOfLinks)))
+    if (!numberOfLinksIsValid(numberOfLinks))
       throw new Error("Invalid number of links");
 
     res.status(201).json({
