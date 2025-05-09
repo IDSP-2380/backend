@@ -79,6 +79,7 @@ router.post("/create/story/private", async (req: Request, res: Response) => {
       maxWordCount: maxWordCount,
       chains: [],
       numberOfLinks: numberOfLinks,
+      isPublished: false,
       startDate: startDate,
       endDate: endDate,
       writingOrder: contributors,
@@ -124,6 +125,7 @@ router.post("/create/story/public", async (req: Request, res: Response) => {
       title: storyTitle,
       isPublic: true,
       maxWordCount: maxWordCount,
+      isPublished: true,
       numberOfLinks: numberOfLinks,
       chains: createdChain,
     }
