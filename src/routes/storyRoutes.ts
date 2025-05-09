@@ -11,23 +11,17 @@ import { newStorySchema } from "../types/dtos";
 
 const router = Router();
 
-router.get("/test", async (_req: Request, res: Response) => {
+router.get("/test/:id", async (req: Request, res: Response) => {
   try {
-    const dummy: Partial<IStory> = {
-      title: "Test Story111111",
-      isPublic: true,
-      contributors: [],
-      status: "Ongoing",
-      maxWordCount: 250,
-      numberOfLinks: 20,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      chains: [],
-    };
-    const created = await Story.create(dummy);
-    res.status(201).json(created);
+    // const testId = '681d2dcc9e9f42f406593dc4'
+    console.log("bfore");
+    const story = await Story.findById(req.params.id);
+    console.log("after");
+    if (!story) res.status(404).json({ error: "custom error hererer" });
+    res.json(story);
   } catch (err) {
-    console.log(err);
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch story" });
   }
 });
 
