@@ -161,4 +161,40 @@ router.get("/stories-and-drafts", async (_req: Request, res: Response) => {
   }
 });
 
+router.get("/filter", async (req: Request, res: Response) => {
+  try {
+    const search = new RegExp(req.query.search as string, "i");
+    const searchQuery = [
+      { title: search },
+      { contributors: { $in: [search] } },
+    ];
+
+    let query: any = { $or: searchQuery };
+
+    const activeTab = req.query.activeTab;
+    if (activeTab === "Ongoing") {
+      query.status = "ongoing";
+    } else if (activeTab === "Completed") {
+      query.status = "completed";
+    }
+
+    const select = req.query.select;
+    let sort = {};
+    switch (select) {
+      case "Recently Updated":
+        sort = { updatedAt: -1 };
+        break;
+      case "Oldest Story":
+        sort = { createdAt: 1 };
+        break;
+    }
+
+    const stories = await Story.find(query).or(searchQuery).sort(sort);
+
+    res.json(stories);
+  } catch (err) {
+    console.log(err);
+  }
+});
+
 export default router as Router;
