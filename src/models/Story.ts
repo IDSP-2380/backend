@@ -5,7 +5,7 @@ export interface IStory extends mongoose.Document {
   title: string;
   isPublic: boolean;
   contributors: string[];
-  status: "ongoing" | "completed" | "drafting";
+  status: "Ongoing" | "Completed" | "Drafting";
   createdAt: Date;
   updatedAt: Date;
   chains: IChain[];
@@ -20,11 +20,11 @@ export interface IStory extends mongoose.Document {
 const StorySchema = new mongoose.Schema({
   title: { type: String, required: true },
   isPublic: { type: Boolean, default: true },
-  contributors: {type: [String], default: []},
+  contributors: { type: [String], default: [] },
   status: {
     type: String,
-    enum: ["ongoing", "completed"],
-    default: "ongoing",
+    enum: ["Ongoing", "Completed"],
+    default: "Ongoing",
   },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
