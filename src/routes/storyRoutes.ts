@@ -60,7 +60,7 @@ router.get("/testLink", async (_req: Request, res: Response) => {
 
 router.post("/create/story/private", async (req: Request, res: Response) => {
   try {
-    const parsed = newStorySchema.parse(req.body);
+    const parsed = newStorySchema.parse(req.body.data);
 
     const {
       storyTitle,
@@ -92,11 +92,16 @@ router.post("/create/story/private", async (req: Request, res: Response) => {
       timePerTurn: timePerTurn,
     };
 
-    await Story.create(story);
+    const createdStory = await Story.create(story);
+
+    const theStory = await Story.findById(createdStory.id);
+
+    console.log
 
     res.status(201).json({
       success: true,
       message: "Story created successfully",
+      data: theStory
     });
   } catch (err) {
     console.log(err);
