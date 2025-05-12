@@ -124,7 +124,7 @@ router.post("/create/story/public", async (req: Request, res: Response) => {
       content: linkContent,
       author: username,
       stage: "Introduction",
-      isDraft: true
+      isDraft: false
     };
 
     const createdLink = await Link.create(linkStuff);
