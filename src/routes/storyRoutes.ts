@@ -193,18 +193,21 @@ router.post(
         res.status(404).json({ error: "Story not found." });
         return;
       }
+      if (!story.contributors.includes(user.username!)) {
+        story.contributors.push(user.username!);
+      }
 
       const newLink = {
         content: req.body.linkContent,
         author: user.username!,
         stage: req.body.select,
         updatedAt: new Date(),
+        isDraft: false,
       };
 
       const createdLink = await Link.create(newLink);
 
       story.chains[0].links.push(createdLink);
-      story.numberOfLinks += 1;
       story.updatedAt = new Date();
 
       await story.save();
