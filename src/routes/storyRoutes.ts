@@ -153,7 +153,9 @@ router.post(
         contributors: [user.username],
       };
 
-      await Story.create(story);
+      const theStory = await Story.create(story);
+
+      console.log(theStory)
 
       console.log("story created");
       if (!wordCountLimitIsValid(maxWordCount, linkContent))
@@ -164,6 +166,7 @@ router.post(
       res.status(201).json({
         success: true,
         message: "Story created successfully",
+        theStory
       });
     } catch (err) {
       console.error("Error creating story:", err);
