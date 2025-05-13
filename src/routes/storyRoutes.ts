@@ -182,9 +182,6 @@ router.post(
   requireAuth(),
   async (req: Request, res: Response) => {
     try {
-      // const parsed = newStorySchema.parse(req.body.data);
-
-      // const { maxWordCount, linkContent, numberOfLinks, storyTitle } = parsed;
       const { userId } = getAuth(req);
 
       const user = await clerkClient.users.getUser(userId!);
@@ -215,45 +212,9 @@ router.post(
       const createdLink = await Link.create(newLink);
 
       story.chains[0].links.push(createdLink);
-      story.numberOfLinks += 1;
       story.updatedAt = new Date();
 
       await story.save();
-      // const linkStuff = {
-      //   content: linkContent,
-      //   author: "me",
-      //   stage: "start",
-      // };
-
-      // const createdLink = await Link.create(linkStuff);
-
-      // console.log("link created");
-
-      // const chain = {
-      //   links: createdLink,
-      // };
-
-      // const createdChain = await Chain.create(chain);
-
-      // console.log("chain created");
-
-      // const story = {
-      //   title: storyTitle,
-      //   isPublic: true,
-      //   maxWordCount: maxWordCount,
-      //   isPublished: true,
-      //   numberOfLinks: numberOfLinks,
-      //   chains: createdChain,
-      // };
-
-      // await Story.create(story);
-
-      // console.log("story created");
-      // if (!wordCountLimitIsValid(maxWordCount, linkContent))
-      //   throw new Error("Invalid word count limit");
-      // if (!numberOfLinksIsValid(numberOfLinks))
-      //   throw new Error("Invalid number of links");
-
       res.status(201).json({
         success: true,
         message: "Story created successfully",
