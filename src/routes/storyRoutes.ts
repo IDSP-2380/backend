@@ -124,7 +124,6 @@ router.post(
 
       const { userId } = getAuth(req);
       const user = await clerkClient.users.getUser(userId!);
-      console.log(req.body);
 
       const linkStuff = {
         content: linkContent,
@@ -157,7 +156,7 @@ router.post(
 
       const theStory = await Story.create(story);
 
-      console.log(theStory)
+      console.log(theStory);
 
       console.log("story created");
       if (!wordCountLimitIsValid(maxWordCount, linkContent))
@@ -168,7 +167,7 @@ router.post(
       res.status(201).json({
         success: true,
         message: "Story created successfully",
-        theStory
+        theStory,
       });
     } catch (err) {
       console.error("Error creating story:", err);
@@ -181,7 +180,7 @@ router.post(
 
 // route for link
 router.post(
-  "/create/story/link/:id",
+  "/create/story/link/:id/:linkId",
   requireAuth(),
   async (req: Request, res: Response) => {
     try {
@@ -191,10 +190,10 @@ router.post(
 
       console.log(req.body);
       console.log(req.params);
-      console.log(user);
 
       const storyId = req.params.id;
-      const story = await Story.findById(storyId);
+      const linkId = req.params.linkId;
+      const story = (await Story.findById(storyId)) as IStory;
 
       if (!story) {
         res.status(404).json({ error: "Story not found." });
@@ -202,6 +201,18 @@ router.post(
       }
       if (!story.contributors.includes(user.username!)) {
         story.contributors.push(user.username!);
+      }
+
+      const linkExists = story.chains[0].links.some(
+        (link) => link._id.toString() === linkId
+      );
+
+      console.log(linkId);
+      console.log(linkExists);
+      console.log(story);
+      console.log(story.chains[0].links);
+
+      if (linkExists) {
       }
 
       const newLink = {

@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
+import { Types } from "mongoose";
 
 export interface ILink extends mongoose.Document {
+  _id: Types.ObjectId;
   content: string;
   author: string;
   stage: string;
