@@ -116,8 +116,7 @@ router.post("/create/story/public", async (req: Request, res: Response) => {
   try {
     const parsed = newStorySchema.parse(req.body.data);
 
-    const { maxWordCount, linkContent, numberOfLinks, storyTitle, username } =
-      parsed;
+    const { maxWordCount, linkContent, numberOfLinks, storyTitle } = parsed;
 
     console.log(req.body);
 
