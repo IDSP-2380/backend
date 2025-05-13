@@ -96,12 +96,12 @@ router.post("/create/story/private", async (req: Request, res: Response) => {
 
     const theStory = await Story.findById(createdStory.id);
 
-    console.log
+    console.log;
 
     res.status(201).json({
       success: true,
       message: "Story created successfully",
-      data: theStory
+      data: theStory,
     });
   } catch (err) {
     console.log(err);
@@ -113,10 +113,10 @@ router.post("/create/story/private", async (req: Request, res: Response) => {
 
 router.post("/create/story/public", async (req: Request, res: Response) => {
   try {
-
     const parsed = newStorySchema.parse(req.body.data);
 
-    const { maxWordCount, linkContent, numberOfLinks, storyTitle, username } = parsed;
+    const { maxWordCount, linkContent, numberOfLinks, storyTitle, username } =
+      parsed;
 
     console.log(req.body);
 
@@ -124,12 +124,12 @@ router.post("/create/story/public", async (req: Request, res: Response) => {
       content: linkContent,
       author: username,
       stage: "Introduction",
-      isDraft: false
+      isDraft: false,
     };
 
     const createdLink = await Link.create(linkStuff);
 
-    console.log("link created")
+    console.log("link created");
 
     const chain = {
       links: createdLink,
@@ -137,7 +137,7 @@ router.post("/create/story/public", async (req: Request, res: Response) => {
 
     const createdChain = await Chain.create(chain);
 
-    console.log("chain created")
+    console.log("chain created");
 
     const story = {
       title: storyTitle,
@@ -146,6 +146,7 @@ router.post("/create/story/public", async (req: Request, res: Response) => {
       isPublished: true,
       numberOfLinks: numberOfLinks,
       chains: createdChain,
+      contributors: [username],
     };
 
     await Story.create(story);
