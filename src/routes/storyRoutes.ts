@@ -1,13 +1,14 @@
 import { Router, Request, Response } from "express";
 import { Story, IStory } from "../models/Story";
 import { User } from "../models/User";
-import { Link } from "../models/Link";
+import { Link, ILink } from "../models/Link";
 import { Chain } from "../models/Chain";
 import {
   numberOfLinksIsValid,
   wordCountLimitIsValid,
 } from "../utils/validateForm";
 import { newStorySchema } from "../types/dtos";
+import { clerkClient, requireAuth, getAuth } from "@clerk/express";
 
 const router = Router();
 
@@ -108,7 +109,6 @@ router.post("/create/story/private", async (req: Request, res: Response) => {
 
 router.post("/create/story/public", async (req: Request, res: Response) => {
   try {
-
     const parsed = newStorySchema.parse(req.body.data);
 
     const { maxWordCount, linkContent, numberOfLinks, storyTitle } = parsed;
@@ -123,7 +123,7 @@ router.post("/create/story/public", async (req: Request, res: Response) => {
 
     const createdLink = await Link.create(linkStuff);
 
-    console.log("link created")
+    console.log("link created");
 
     const chain = {
       links: createdLink,
@@ -131,7 +131,7 @@ router.post("/create/story/public", async (req: Request, res: Response) => {
 
     const createdChain = await Chain.create(chain);
 
-    console.log("chain created")
+    console.log("chain created");
 
     const story = {
       title: storyTitle,
@@ -161,6 +161,92 @@ router.post("/create/story/public", async (req: Request, res: Response) => {
     });
   }
 });
+// route for link
+router.post(
+  "/create/story/link/:id",
+  requireAuth(),
+  async (req: Request, res: Response) => {
+    try {
+      // const parsed = newStorySchema.parse(req.body.data);
+
+      // const { maxWordCount, linkContent, numberOfLinks, storyTitle } = parsed;
+      const { userId } = getAuth(req);
+
+      const user = await clerkClient.users.getUser(userId!);
+
+      console.log(req.body);
+      console.log(req.params);
+      console.log(user);
+
+      const storyId = req.params.id;
+      const story = await Story.findById(storyId);
+
+      if (!story) {
+        res.status(404).json({ error: "Story not found." });
+        return;
+      }
+
+      const newLink = {
+        content: req.body.linkContent,
+        author: user.username!,
+        stage: req.body.select,
+        updatedAt: new Date(),
+      };
+
+      const createdLink = await Link.create(newLink);
+
+      story.chains[0].links.push(createdLink);
+      story.numberOfLinks += 1;
+      story.updatedAt = new Date();
+
+      await story.save();
+      // const linkStuff = {
+      //   content: linkContent,
+      //   author: "me",
+      //   stage: "start",
+      // };
+
+      // const createdLink = await Link.create(linkStuff);
+
+      // console.log("link created");
+
+      // const chain = {
+      //   links: createdLink,
+      // };
+
+      // const createdChain = await Chain.create(chain);
+
+      // console.log("chain created");
+
+      // const story = {
+      //   title: storyTitle,
+      //   isPublic: true,
+      //   maxWordCount: maxWordCount,
+      //   isPublished: true,
+      //   numberOfLinks: numberOfLinks,
+      //   chains: createdChain,
+      // };
+
+      // await Story.create(story);
+
+      // console.log("story created");
+      // if (!wordCountLimitIsValid(maxWordCount, linkContent))
+      //   throw new Error("Invalid word count limit");
+      // if (!numberOfLinksIsValid(numberOfLinks))
+      //   throw new Error("Invalid number of links");
+
+      res.status(201).json({
+        success: true,
+        message: "Story created successfully",
+      });
+    } catch (err) {
+      console.error("Error creating story:", err);
+      res.status(500).json({
+        error: "An error occurred while creating the story",
+      });
+    }
+  }
+);
 
 router.get("/stories-and-drafts", async (_req: Request, res: Response) => {
   try {

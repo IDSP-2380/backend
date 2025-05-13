@@ -32,7 +32,7 @@ const StorySchema = new mongoose.Schema({
   chains: { type: [ChainSchema], default: [] },
   maxWordCount: { type: Number, required: true },
   numberOfLinks: { type: Number, required: true },
-  isPublished: {type: Boolean, required: true},
+  isPublished: { type: Boolean, required: true },
   startDate: { type: Date, required: false },
   endDate: { type: Date, required: false },
   writingOrder: { type: [String], required: false },
