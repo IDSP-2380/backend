@@ -8,15 +8,16 @@ import {
   wordCountLimitIsValid,
 } from "../utils/validateForm";
 import { newStorySchema } from "../types/dtos";
+import { clerkClient, getAuth, requireAuth } from "@clerk/express";
 
 const router = Router();
 
 router.get("/test/:id", async (req: Request, res: Response) => {
   try {
     // const testId = '681d2dcc9e9f42f406593dc4'
-    console.log("bfore");
+    // console.log("bfore");
     const story = await Story.findById(req.params.id);
-    console.log("after");
+    // console.log("after");
     if (!story) res.status(404).json({ error: "custom error hererer" });
     res.json(story);
   } catch (err) {
@@ -96,8 +97,6 @@ router.post("/create/story/private", async (req: Request, res: Response) => {
 
     const theStory = await Story.findById(createdStory.id);
 
-    console.log;
-
     res.status(201).json({
       success: true,
       message: "Story created successfully",
@@ -111,63 +110,69 @@ router.post("/create/story/private", async (req: Request, res: Response) => {
   }
 });
 
-router.post("/create/story/public", async (req: Request, res: Response) => {
-  try {
-    const parsed = newStorySchema.parse(req.body.data);
+router.post(
+  "/create/story/public",
+  requireAuth(),
+  async (req: Request, res: Response) => {
+    console.log("in new story post route");
+    try {
+      const parsed = newStorySchema.parse(req.body);
 
-    const { maxWordCount, linkContent, numberOfLinks, storyTitle, username } =
-      parsed;
+      const { maxWordCount, linkContent, numberOfLinks, storyTitle } = parsed;
 
-    console.log(req.body);
+      const { userId } = getAuth(req);
+      const user = await clerkClient.users.getUser(userId!);
+      console.log(req.body);
 
-    const linkStuff = {
-      content: linkContent,
-      author: username,
-      stage: "Introduction",
-      isDraft: false,
-    };
+      const linkStuff = {
+        content: linkContent,
+        author: user.username,
+        stage: "Introduction",
+        isDraft: false,
+      };
 
-    const createdLink = await Link.create(linkStuff);
+      const createdLink = await Link.create(linkStuff);
 
-    console.log("link created");
+      console.log("link created");
 
-    const chain = {
-      links: createdLink,
-    };
+      const chain = {
+        links: createdLink,
+      };
 
-    const createdChain = await Chain.create(chain);
+      const createdChain = await Chain.create(chain);
 
-    console.log("chain created");
+      console.log("chain created");
 
-    const story = {
-      title: storyTitle,
-      isPublic: true,
-      maxWordCount: maxWordCount,
-      isPublished: true,
-      numberOfLinks: numberOfLinks,
-      chains: createdChain,
-      contributors: [username],
-    };
+      const story = {
+        title: storyTitle,
+        isPublic: true,
+        maxWordCount: maxWordCount,
+        isPublished: true,
+        numberOfLinks: numberOfLinks,
+        chains: createdChain,
+        contributors: [user.username],
+      };
 
-    await Story.create(story);
+      await Story.create(story);
 
-    console.log("story created");
-    if (!wordCountLimitIsValid(maxWordCount, linkContent))
-      throw new Error("Invalid word count limit");
-    if (!numberOfLinksIsValid(numberOfLinks))
-      throw new Error("Invalid number of links");
+      console.log("story created");
+      if (!wordCountLimitIsValid(maxWordCount, linkContent))
+        throw new Error("Invalid word count limit");
+      if (!numberOfLinksIsValid(numberOfLinks))
+        throw new Error("Invalid number of links");
 
-    res.status(201).json({
-      success: true,
-      message: "Story created successfully",
-    });
-  } catch (err) {
-    console.error("Error creating story:", err);
-    res.status(500).json({
-      error: "An error occurred while creating the story",
-    });
+      res.status(201).json({
+        success: true,
+        message: "Story created successfully",
+      });
+    } catch (err) {
+      console.error("Error creating story:", err);
+      res.status(500).json({
+        error: "An error occurred while creating the story",
+      });
+    }
   }
-});
+);
 
 router.get("/stories-and-drafts", async (_req: Request, res: Response) => {
   try {
