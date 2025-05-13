@@ -6,7 +6,6 @@ export const contributorSchema = z.object({
 
 export const newStorySchema = z.object({
   storyTitle: z.string(),
-  username: z.string(),
   isPublic: z.boolean().default(true),
   contributors: z.string().array().optional(),
   status: z.enum(["ongoing", "completed"]).default("ongoing"),
@@ -17,5 +16,5 @@ export const newStorySchema = z.object({
   endDate: z.string().optional(),
   writingOrder: z.array(z.string()).optional(),
   timePerTurn: z.string().optional(),
-  linkContent: z.string().optional()
+  linkContent: z.string().optional(),
 });
