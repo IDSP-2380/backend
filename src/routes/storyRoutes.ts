@@ -207,14 +207,6 @@ router.post(
         (link) => link._id.toString() === linkId
       );
 
-      console.log(linkId);
-      console.log(linkExists);
-      console.log(story);
-      console.log(story.chains[0].links);
-
-      if (linkExists) {
-      }
-
       const newLink = {
         content: req.body.linkContent,
         author: user.username!,
@@ -223,10 +215,21 @@ router.post(
         isDraft: false,
       };
 
-      const createdLink = await Link.create(newLink);
+      if (linkExists) {
+        const link = story.chains[0].links.find(
+          (l) => l._id.toString() === linkId
+        );
 
-      story.chains[0].links.push(createdLink);
-      story.updatedAt = new Date();
+        if (link) {
+          link.content = req.body.linkContent;
+          link.updatedAt = new Date();
+        }
+      } else {
+        const createdLink = await Link.create(newLink);
+
+        story.chains[0].links.push(createdLink);
+        story.updatedAt = new Date();
+      }
 
       await story.save();
       res.status(201).json({
