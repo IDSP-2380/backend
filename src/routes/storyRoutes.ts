@@ -1,23 +1,20 @@
 import { Router, Request, Response } from "express";
 import { Story, IStory } from "../models/Story";
 import { User } from "../models/User";
-import { Link } from "../models/Link";
+import { Link, ILink } from "../models/Link";
 import { Chain } from "../models/Chain";
 import {
   numberOfLinksIsValid,
   wordCountLimitIsValid,
 } from "../utils/validateForm";
 import { newStorySchema } from "../types/dtos";
-import { clerkClient, getAuth, requireAuth } from "@clerk/express";
+import { clerkClient, requireAuth, getAuth } from "@clerk/express";
 
 const router = Router();
 
 router.get("/test/:id", async (req: Request, res: Response) => {
   try {
-    // const testId = '681d2dcc9e9f42f406593dc4'
-    // console.log("bfore");
     const story = await Story.findById(req.params.id);
-    // console.log("after");
     if (!story) res.status(404).json({ error: "custom error hererer" });
     res.json(story);
   } catch (err) {
@@ -114,7 +111,6 @@ router.post(
   "/create/story/public",
   requireAuth(),
   async (req: Request, res: Response) => {
-    console.log("in new story post route");
     try {
       const parsed = newStorySchema.parse(req.body);
 
@@ -122,7 +118,6 @@ router.post(
 
       const { userId } = getAuth(req);
       const user = await clerkClient.users.getUser(userId!);
-      console.log(req.body);
 
       const linkStuff = {
         content: linkContent,
@@ -155,7 +150,7 @@ router.post(
 
       const theStory = await Story.create(story);
 
-      console.log(theStory)
+      console.log(theStory);
 
       console.log("story created");
       if (!wordCountLimitIsValid(maxWordCount, linkContent))
@@ -166,7 +161,74 @@ router.post(
       res.status(201).json({
         success: true,
         message: "Story created successfully",
-        theStory
+        theStory,
+      });
+    } catch (err) {
+      console.error("Error creating story:", err);
+      res.status(500).json({
+        error: "An error occurred while creating the story",
+      });
+    }
+  }
+);
+
+// route for link
+router.post(
+  "/create/story/link/:id/:linkId",
+  requireAuth(),
+  async (req: Request, res: Response) => {
+    try {
+      const { userId } = getAuth(req);
+
+      const user = await clerkClient.users.getUser(userId!);
+
+      console.log(req.body);
+      console.log(req.params);
+
+      const storyId = req.params.id;
+      const linkId = req.params.linkId;
+      const story = (await Story.findById(storyId)) as IStory;
+
+      if (!story) {
+        res.status(404).json({ error: "Story not found." });
+        return;
+      }
+      if (!story.contributors.includes(user.username!)) {
+        story.contributors.push(user.username!);
+      }
+
+      const linkExists = story.chains[0].links.some(
+        (link) => link._id.toString() === linkId
+      );
+
+      const newLink = {
+        content: req.body.linkContent,
+        author: user.username!,
+        stage: req.body.select,
+        updatedAt: new Date(),
+        isDraft: false,
+      };
+
+      if (linkExists) {
+        const link = story.chains[0].links.find(
+          (l) => l._id.toString() === linkId
+        );
+
+        if (link) {
+          link.content = req.body.linkContent;
+          link.updatedAt = new Date();
+        }
+      } else {
+        const createdLink = await Link.create(newLink);
+
+        story.chains[0].links.push(createdLink);
+        story.updatedAt = new Date();
+      }
+
+      await story.save();
+      res.status(201).json({
+        success: true,
+        message: "Story created successfully",
       });
     } catch (err) {
       console.error("Error creating story:", err);
