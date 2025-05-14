@@ -14,10 +14,7 @@ const router = Router();
 
 router.get("/test/:id", async (req: Request, res: Response) => {
   try {
-    // const testId = '681d2dcc9e9f42f406593dc4'
-    console.log("bfore");
     const story = await Story.findById(req.params.id);
-    console.log("after");
     if (!story) res.status(404).json({ error: "custom error hererer" });
     res.json(story);
   } catch (err) {
@@ -97,8 +94,6 @@ router.post("/create/story/private", async (req: Request, res: Response) => {
 
     const theStory = await Story.findById(createdStory.id);
 
-    console.log;
-
     res.status(201).json({
       success: true,
       message: "Story created successfully",
@@ -116,7 +111,6 @@ router.post(
   "/create/story/public",
   requireAuth(),
   async (req: Request, res: Response) => {
-    console.log("in new story post route");
     try {
       const parsed = newStorySchema.parse(req.body);
 
