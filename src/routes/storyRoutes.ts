@@ -198,9 +198,9 @@ router.get("/filter", async (req: Request, res: Response) => {
 
     const activeTab = req.query.activeTab;
     if (activeTab === "Ongoing") {
-      query.status = "ongoing";
+      query.status = "Ongoing";
     } else if (activeTab === "Completed") {
-      query.status = "completed";
+      query.status = "Completed";
     }
 
     const select = req.query.select;
