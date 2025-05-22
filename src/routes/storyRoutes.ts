@@ -305,7 +305,6 @@ router.get("/filter", async (req: Request, res: Response) => {
     }
 
     const stories = await Story.find(query).or(searchQuery).sort(sort);
-    console.log("Stories:", stories);
     res.json(stories);
   } catch (err) {
     console.log(err);
