@@ -263,6 +263,10 @@ router.get("/filter", async (req: Request, res: Response) => {
       query.status = "Ongoing";
     } else if (activeTab === "Completed") {
       query.status = "Completed";
+    } else if (activeTab === "Public") {
+      query.isPublic = true;
+    } else if (activeTab === "Private") {
+      query.isPublic = false;
     }
 
     const select = req.query.select;
@@ -283,5 +287,7 @@ router.get("/filter", async (req: Request, res: Response) => {
     console.log(err);
   }
 });
+
+router.get("/filterUserStories", async (req: Request, res: Response) => {});
 
 export default router as Router;
