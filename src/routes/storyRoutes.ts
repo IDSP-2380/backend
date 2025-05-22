@@ -107,23 +107,23 @@ router.post("/create/story/private", async (req: Request, res: Response) => {
   }
 });
 
-router.post("/update",  async (req: Request, res: Response) => {
+router.post("/update", async (req: Request, res: Response) => {
   try {
     const { id } = req.body;
 
-    await Story.findByIdAndUpdate(id, {status: "Completed"});
+    await Story.findByIdAndUpdate(id, { status: "Completed" });
 
     res.status(201).json({
       success: true,
-      message: "Story status updated successfully"
+      message: "Story status updated successfully",
     });
   } catch (err) {
     console.error("Error updating story status:", err);
-      res.status(500).json({
-        error: "An error occurred while updating the story status",
-      });
+    res.status(500).json({
+      error: "An error occurred while updating the story status",
+    });
   }
-})
+});
 
 router.post(
   "/create/story/public",
@@ -276,7 +276,7 @@ router.get("/filter", async (req: Request, res: Response) => {
 
     let query: any = { $or: searchQuery };
 
-    const activeTab = req.query.activeTab;
+    const { activeTab, select, userID } = req.query;
     if (activeTab === "Ongoing") {
       query.status = "Ongoing";
     } else if (activeTab === "Completed") {
@@ -287,7 +287,13 @@ router.get("/filter", async (req: Request, res: Response) => {
       query.isPublic = false;
     }
 
-    const select = req.query.select;
+    if (userID) {
+      const user = await clerkClient.users.getUser(userID.toString());
+      if (user?.username) {
+        query.contributors = { $in: [user.username] };
+      }
+    }
+
     let sort = {};
     switch (select) {
       case "Recently Updated":
@@ -299,7 +305,6 @@ router.get("/filter", async (req: Request, res: Response) => {
     }
 
     const stories = await Story.find(query).or(searchQuery).sort(sort);
-
     res.json(stories);
   } catch (err) {
     console.log(err);
