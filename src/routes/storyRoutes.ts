@@ -107,6 +107,24 @@ router.post("/create/story/private", async (req: Request, res: Response) => {
   }
 });
 
+router.post("/update",  async (req: Request, res: Response) => {
+  try {
+    const { id } = req.body;
+
+    await Story.findByIdAndUpdate(id, {status: "Completed"});
+
+    res.status(201).json({
+      success: true,
+      message: "Story status updated successfully"
+    });
+  } catch (err) {
+    console.error("Error updating story status:", err);
+      res.status(500).json({
+        error: "An error occurred while updating the story status",
+      });
+  }
+})
+
 router.post(
   "/create/story/public",
   requireAuth(),
